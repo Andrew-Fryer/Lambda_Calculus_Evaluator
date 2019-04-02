@@ -4,6 +4,8 @@ public class LambdaEvaluator {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
+		// this is my test data:
+		
 		Lambda lambda1 = new Lambda();
 		
 		lambda1.var.name = "y";

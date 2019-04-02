@@ -16,53 +16,55 @@ public class Expression {
 		if(isSimplified) {
 			//return;  // don't optimize when debugging
 		}
-		while(terms.size() > 1) {
-			Term headTerm = terms.pop();
-			Term current = headTerm;
-			// extract lambda from any Instance shells
-			while(current instanceof Instance) {
-				current = ((Instance) current).binding.value;
-				if(current != null) {
-					try {
-						current = (Term) ((Lambda) current).clone();
-					} catch (CloneNotSupportedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				} else {
-					// the variable is not defined yet
-					terms.push(headTerm);
-					isSimplified = true;
-					return;
-				}
+		while(terms.size() > 0) {
+			Term term = unwrapInstance(terms.pop());
+			
+			if(term instanceof Instance) {
+				terms.push(term);
+				return;
 			}
 			
-			Lambda lambda = null;
+			Lambda lambda = (Lambda) term;
 			
-			if(current != headTerm) {
+			lambda.simplify();
+			
+			if(terms.size() > 0) {
+				lambda.substitute(terms.pop());
+			}
+			
+			// there shouldn't be any instances of the outermost variable in the body anymore
+			
+			terms.addAll(lambda.body.terms);  // check that this doesn't reverse order.....
+		}
+		isSimplified = true;
+		System.out.println("and here it is now: ");
+		System.out.println(stringify());
+	}
+	
+	private static Term unwrapInstance(Term term) {
+		Term current = term;
+		Instance prevInstance;
+		// extract lambda from any Instance shells
+		while(current instanceof Instance) {
+			prevInstance = (Instance) current;
+			current = prevInstance.binding.value;
+			if(current == null) {
+				// the variable is not defined yet
+				return prevInstance;
+			} else if(current instanceof Lambda) {
 				// we had to un-wrap an instance
 				// now we need to clone it so that each instance has its own copy of the value of the variable
+				Lambda lambda = null;
 				try {
 					lambda = (Lambda) ((Lambda) current).clone();
 				} catch (CloneNotSupportedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			} else {
-				lambda = (Lambda) current;
+				return lambda;
 			}
-			
-			lambda.simplify();
-			
-			lambda.substitute(terms.pop());
-			
-			// there shouldn't be any instances of the outermost variable in the body anymore
-			
-			terms.push(lambda); // lambda.body?
 		}
-		isSimplified = true;
-		System.out.println("and here it is now: ");
-		System.out.println(stringify());
+		return (Lambda) term;
 	}
 	
 	public String stringify() {
