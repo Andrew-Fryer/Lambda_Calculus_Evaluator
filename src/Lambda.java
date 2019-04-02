@@ -7,7 +7,7 @@ public class Lambda implements Term, Cloneable {
 		return new Lambda();
 	}
 	
-	public void eat(Term input) {
+	public void substitute(Term input) {
 		if(var.instances.size() > 0) {
 			input.simplify();
 		} else {
@@ -15,6 +15,7 @@ public class Lambda implements Term, Cloneable {
 		}
 		var.value = input;
 		// body.isSimplified = false;
+		body.simplify();
 	}
 	
 	public void simplify() {

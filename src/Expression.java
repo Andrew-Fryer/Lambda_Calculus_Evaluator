@@ -23,7 +23,6 @@ public class Expression {
 			while(current instanceof Instance) {
 				current = ((Instance) current).binding.value;
 				if(current != null) {
-					current.simplify();
 					try {
 						current = (Term) ((Lambda) current).clone();
 					} catch (CloneNotSupportedException e) {
@@ -37,15 +36,29 @@ public class Expression {
 					return;
 				}
 			}
-			Lambda lambda = (Lambda) current;
+			
+			Lambda lambda = null;
+			
+			if(current != headTerm) {
+				// we had to un-wrap an instance
+				// now we need to clone it so that each instance has its own copy of the value of the variable
+				try {
+					lambda = (Lambda) ((Lambda) current).clone();
+				} catch (CloneNotSupportedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
+				lambda = (Lambda) current;
+			}
 			
 			lambda.simplify();
 			
-			lambda.eat(terms.pop());
+			lambda.substitute(terms.pop());
 			
-			lambda.simplify(); // forces the substitution
+			// there shouldn't be any instances of the outermost variable in the body anymore
 			
-			terms.push(lambda);
+			terms.push(lambda); // lambda.body?
 		}
 		isSimplified = true;
 		System.out.println("and here it is now: ");
