@@ -4,7 +4,6 @@ import java.util.ArrayList;
 public class Variable implements Serializable{
 	private static final long serialVersionUID = 1L;
 	public Term value;
-	//public ArrayList<Instance> instances = new ArrayList<Instance>();
 	public String name;
 	public int numRefs = 0;
 }
