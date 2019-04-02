@@ -14,7 +14,7 @@ public class Lambda implements Term, Cloneable {
 			// should I somehow mark that input is garbage?
 		}
 		var.value = input;
-		// set isSimplified on the parent expression to false
+		// body.isSimplified = false;
 	}
 	
 	public void simplify() {
@@ -25,7 +25,7 @@ public class Lambda implements Term, Cloneable {
 	public String stringify() {
 		// TODO Auto-generated method stub
 		
-		return "(\\" + var.name + " -> " + body.stringify() + ")";
+		return "(\\" + var.name + (var.value != null ? "[:= " + var.value.stringify() + "]" : "") + " -> " + body.stringify() + ")";
 	}
 	
 	public Object clone() throws CloneNotSupportedException{

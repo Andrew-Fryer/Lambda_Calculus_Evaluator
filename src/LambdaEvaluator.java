@@ -6,7 +6,7 @@ public class LambdaEvaluator {
 		
 		Lambda lambda1 = new Lambda();
 		
-		lambda1.var.name = "x";
+		lambda1.var.name = "y";
 		
 		Instance inst = new Instance();
 		
@@ -36,23 +36,23 @@ public class LambdaEvaluator {
 		
 		Lambda lambda2 = new Lambda();
 		
-		lambda2.var.name = "y";
+		lambda2.var.name = "x";
 		
 		Instance inst2 = new Instance();
 		
 		inst2.binding = lambda2.var;
 		
-		//Instance inst4 = new Instance();
+		Instance inst4 = new Instance();
 		
-		//inst4.binding = lambda2.var;
+		inst4.binding = lambda2.var;
 		
 		lambda2.var.instances.add(inst2);
 		
 		lambda2.body.terms.add(inst2);
 		
-		//lambda2.var.instances.add(inst4);
+		lambda2.var.instances.add(inst4);
 		
-		//lambda2.body.terms.add(inst4);
+		lambda2.body.terms.add(inst4);
 		
 		expr1.terms.add(lambda2);
 		

@@ -16,36 +16,36 @@ public class Expression {
 		if(isSimplified) {
 			//return;  // don't optimize when debugging
 		}
-		Lambda head = null;
 		while(terms.size() > 1) {
-			Term current = terms.pop();
+			Term headTerm = terms.pop();
+			Term current = headTerm;
 			// extract lambda from any Instance shells
 			while(current instanceof Instance) {
-				try {
-					current = ((Instance) current).binding.value;
-					if(current == null) {
-						// the variable is not defined yet
-						isSimplified = true;
-						return;
+				current = ((Instance) current).binding.value;
+				if(current != null) {
+					current.simplify();
+					try {
+						current = (Term) ((Lambda) current).clone();
+					} catch (CloneNotSupportedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					throw new Error("undefined instance");
+				} else {
+					// the variable is not defined yet
+					terms.push(headTerm);
+					isSimplified = true;
+					return;
 				}
 			}
 			Lambda lambda = (Lambda) current;
 			
 			lambda.simplify();
 			
-			// clone the lambda so that we don't substitute into every instance of the variable
-			try {
-				head = (Lambda) lambda.clone();
-			} catch (CloneNotSupportedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			lambda.eat(terms.pop());
 			
-			head.eat(terms.pop());
-			terms.push(head);
+			lambda.simplify(); // forces the substitution
+			
+			terms.push(lambda);
 		}
 		isSimplified = true;
 		System.out.println("and here it is now: ");
@@ -54,7 +54,7 @@ public class Expression {
 	
 	public String stringify() {
 		String result = "";
-		for(int i=0; i<terms.size(); i++) {
+		for(int i=terms.size()-1; i>=0; i--) {
 			result = result.concat(terms.get(i).stringify() + " ");
 		}
 		return result;
