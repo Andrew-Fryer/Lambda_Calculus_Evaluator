@@ -1,5 +1,11 @@
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
-public class Lambda implements Term, Cloneable {
+public class Lambda implements Term, Serializable {
+	private static final long serialVersionUID = 1L;  // eclipse did this
 	public Variable var = new Variable();
 	public Expression body = new Expression();
 	
@@ -8,7 +14,7 @@ public class Lambda implements Term, Cloneable {
 	}
 	
 	public void substitute(Term input) {
-		if(var.instances.size() > 0) {
+		if(var.numRefs > 0) {
 			input.simplify();
 		} else {
 			// should I somehow mark that input is garbage?
@@ -31,10 +37,29 @@ public class Lambda implements Term, Cloneable {
 		return "(\\" + var.name + (var.value != null ? "[:= " + var.value.stringify() + "]" : "") + " -> " + body.stringify() + ")";
 	}
 	
-	@Override
-	public Object clone() throws CloneNotSupportedException{
-		return super.clone();
+	public Object clone() {  // deep
+		try {
+			ByteArrayOutputStream outputByteStream = new ByteArrayOutputStream();
+			ObjectOutputStream outputObjectStream = new ObjectOutputStream(outputByteStream);
+			outputObjectStream.writeObject(this);
+			ByteArrayInputStream inputByteStream = new ByteArrayInputStream(outputByteStream.toByteArray());
+			ObjectInputStream inputObjectStream = new ObjectInputStream(inputByteStream);
+			return inputObjectStream.readObject();
+		} catch (Exception e) {
+			throw new Error("Failed to clone lambda");
+		}
+		/*Lambda clone = new Lambda();
+		
+		clone.var.name = this.var.name;
+		clone.var.numRefs = this.var.numRefs;
+		if(this.var.value == null) {
+			clone.var.value = null;
+		} else if(this.var.value instanceof Instance) {
+			clone.var.value = new Instance();
+			clone.var.value.binding = 
+		}
+		
+		return ;*/
 	}
-	
 
 }

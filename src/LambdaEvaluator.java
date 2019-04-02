@@ -18,11 +18,12 @@ public class LambdaEvaluator {
 		
 		inst3.binding = lambda1.var;
 		
-		lambda1.var.instances.add(inst);
+		//lambda1.var.instances.add(inst);
 		
 		lambda1.body.terms.add(inst);
 		
-		lambda1.var.instances.add(inst3);
+		//lambda1.var.instances.add(inst3);
+		lambda1.var.numRefs = 2;
 		
 		lambda1.body.terms.add(inst3);
 		
@@ -48,11 +49,12 @@ public class LambdaEvaluator {
 		
 		inst4.binding = lambda2.var;
 		
-		lambda2.var.instances.add(inst2);
+		//lambda2.var.instances.add(inst2);
 		
 		lambda2.body.terms.add(inst2);
 		
-		lambda2.var.instances.add(inst4);
+		//lambda2.var.instances.add(inst4);
+		lambda2.var.numRefs = 2;
 		
 		lambda2.body.terms.add(inst4);
 		

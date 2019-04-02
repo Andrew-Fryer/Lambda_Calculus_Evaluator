@@ -1,6 +1,7 @@
+import java.io.Serializable;
 
-public class Instance implements Term {
-	
+public class Instance implements Term, Serializable {
+	private static final long serialVersionUID = 1L;
 	public Variable binding;
 
 	public void simplify() {

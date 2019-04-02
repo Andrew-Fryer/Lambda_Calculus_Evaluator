@@ -1,6 +1,8 @@
+import java.io.Serializable;
 import java.util.Stack;
 
-public class Expression {
+public class Expression implements Serializable {
+	private static final long serialVersionUID = 1L;
 	public Stack<Term> terms  = new Stack<Term>();
 	private boolean isSimplified = false;
 	
@@ -55,12 +57,7 @@ public class Expression {
 				// we had to un-wrap an instance
 				// now we need to clone it so that each instance has its own copy of the value of the variable
 				Lambda lambda = null;
-				try {
-					lambda = (Lambda) ((Lambda) current).clone();
-				} catch (CloneNotSupportedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				lambda = (Lambda) ((Lambda) current).clone();
 				return lambda;
 			}
 		}
