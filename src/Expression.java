@@ -38,7 +38,7 @@ public class Expression implements Term, Serializable, Printable {
 					if(bufferLength > 0) {
 						String varName = input.substring(i - bufferLength, i);
 						Instance inst = new Instance(varName, varNameMap);
-						terms.push(inst);
+						terms.add(0, inst);
 						bufferLength = 0;
 					}
 				} else {
@@ -57,7 +57,7 @@ public class Expression implements Term, Serializable, Printable {
 						Expression expr = new Expression(segment, varNameMap, root);
 						term = (Term) expr;
 					}
-					terms.push(term);  // I think this is using the stack as if the input string is in reverse polish
+					terms.add(0, term);  // I think this is using the stack as if the input string is in reverse polish
 				}
 				bracketDepth--;  // set bufferLength = 0?
 			} // else do nothing because we are just skipping over the contents of something in brackets
@@ -66,7 +66,7 @@ public class Expression implements Term, Serializable, Printable {
 		if(bufferLength > 0) {
 			String varName = input.substring(input.length() - bufferLength);
 			Instance inst = new Instance(varName, varNameMap);
-			terms.push(inst);
+			terms.add(0, inst);
 		}
 	}
 
@@ -130,12 +130,12 @@ public class Expression implements Term, Serializable, Printable {
 				return lambda;
 			}
 		}
-		return (Lambda) term;
+		return term;  // why was I casting to Lambda?
 	}
 	
 	public String stringify() {
 		String result = "";
-		for(int i=terms.size()-1; i>=0; i--) {
+		for(int i = terms.size()-1; i >= 0; i--) {
 			result = result.concat(terms.get(i).stringify() + " ");
 		}
 		return result;
