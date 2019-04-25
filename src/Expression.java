@@ -9,11 +9,10 @@ public class Expression implements Serializable {
 	private boolean isSimplified = false;
 	
 	public static Expression createExpressionFromString(String input) {
-		return parseExpression(input, new Hashtable<String,Variable>());
+		return new Expression(input, new Hashtable<String,Variable>());
 	}
 
-	public static Expression parseExpression(String input, Map<String, Variable> varNameMap) {
-		Expression result = new Expression();
+	public Expression(String input, Map<String, Variable> varNameMap) {
 		
 		int bufferLength = 0;
 		
@@ -33,8 +32,8 @@ public class Expression implements Serializable {
 					// flush the buffer
 					if(bufferLength > 0) {
 						String varName = input.substring(i - bufferLength, i);
-						Instance inst = Instance.parseInstance(varName, varNameMap);
-						result.terms.push(inst);
+						Instance inst = new Instance(varName, varNameMap);
+						terms.push(inst);
 						bufferLength = 0;
 					}
 				} else {
@@ -47,13 +46,13 @@ public class Expression implements Serializable {
 					String segment = input.substring(bracketPos+1, i);
 					Term term;
 					if(segment.charAt(0) == '\\') {
-						Lambda lambda = Lambda.parseLambda(segment, varNameMap);  // rename to parseLambda?
+						Lambda lambda = new Lambda(segment, varNameMap);  // rename to parseLambda?
 						term = (Term) lambda;
 					} else {
-						Expression expr = parseExpression(segment, varNameMap);
+						Expression expr = new Expression(segment, varNameMap);
 						term = (Term) expr;
 					}
-					result.terms.push(term);  // I think this is using the stack as if the input string is in reverse polish
+					terms.push(term);  // I think this is using the stack as if the input string is in reverse polish
 				}
 				bracketDepth--;  // set bufferLength = 0?
 			} // else do nothing because we are just skipping over the contents of something in brackets
@@ -61,11 +60,9 @@ public class Expression implements Serializable {
 		// flush the buffer
 		if(bufferLength > 0) {
 			String varName = input.substring(input.length() - bufferLength);
-			Instance inst = Instance.parseInstance(varName, varNameMap);
-			result.terms.push(inst);
+			Instance inst = new Instance(varName, varNameMap);
+			terms.push(inst);
 		}
-		
-		return result;
 	}
 
 	void simplify() {

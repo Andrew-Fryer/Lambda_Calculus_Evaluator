@@ -5,16 +5,12 @@ public class Instance implements Term, Serializable {
 	private static final long serialVersionUID = 1L;
 	public Variable binding;
 	
-	public static Instance parseInstance(String input, Map<String, Variable> varNameMap) {
-		Instance result = new Instance();
-		Variable binding = varNameMap.get(input);
+	public Instance(String input, Map<String, Variable> varNameMap) {
+		binding = varNameMap.get(input);
 		if(binding == null) {
 			throw new Error("Undefined variable: \"" + input + "\"");
 		}
-		result.binding = binding;
 		binding.numRefs++;
-		
-		return result;
 	}
 
 	public void simplify() {
