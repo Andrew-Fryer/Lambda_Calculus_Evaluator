@@ -12,6 +12,7 @@ public class Instance implements Term, Serializable {
 			throw new Error("Undefined variable: \"" + input + "\"");
 		}
 		result.binding = binding;
+		binding.numRefs++;
 		
 		return result;
 	}

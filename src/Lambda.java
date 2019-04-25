@@ -8,9 +8,37 @@ import java.util.Map;
 public class Lambda implements Term, Serializable {
 	private static final long serialVersionUID = 1L;  // eclipse did this
 	public Variable var = new Variable();
-	public Expression body = new Expression();
+	public Expression body = new Expression();  // why am I instantiating here?
 	
 	public static Lambda parseLambda(String input, Map<String, Variable> varNameMap) {
+		Lambda result = new Lambda();
+		int i = 0;
+		i++; // move to after the '\\' character
+		// ignore whitespace
+		while(input.charAt(i) == ' ') {
+			i++;
+		}
+		int varNameStart = i;
+		while(input.charAt(i) != ' ' ) {  // && != '-'
+			i++;
+		}
+		String varName = input.substring(varNameStart, i);
+		Variable var = new Variable();
+		var.name = varName;
+		varNameMap.put(varName,  var);
+		result.var = var;
+		
+		// ignore whitespace
+		while(input.charAt(i) == ' ') {
+			i++;
+		}
+		i += 2;  // jump over "->"
+		// ignore whitespace
+		while(input.charAt(i) == ' ') {
+			i++;
+		}
+		result.body = Expression.parseExpression(input.substring(i, input.length()-1), varNameMap);
+		
 		return new Lambda();
 	}
 	

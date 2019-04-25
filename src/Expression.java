@@ -25,11 +25,9 @@ public class Expression implements Serializable {
 			
 			if(current == '(') {  // set bufferLength = 0?
 				if(bracketDepth == 0) {
-					bracketPos = i + 1;
-					bracketDepth = 1;
-				} else {
-					bracketDepth++;
+					bracketPos = i;
 				}
+				bracketDepth++;
 			} else if(bracketDepth == 0) {
 				if(current == ' ') {
 					// flush the buffer
@@ -43,7 +41,7 @@ public class Expression implements Serializable {
 				if(bracketDepth <= 0) {
 					throw new Error("closing bracket does not have any corresponding opening bracket");
 				} else if(bracketDepth == 1) {
-					String segment = input.substring(bracketPos, i);
+					String segment = input.substring(bracketPos+1, i);
 					Term term;
 					if(segment.charAt(0) == '\\') {
 						Lambda lambda = Lambda.parseLambda(segment, varNameMap);  // rename to parseLambda?
@@ -53,8 +51,9 @@ public class Expression implements Serializable {
 						term = (Term) expr;
 					}
 					result.terms.push(term);  // I think this is using the stack as if the input string is in reverse polish
-				} // else do nothing because we are just skipping over the contents of something in brackets
-			}
+				}
+				bracketDepth--;  // set bufferLength = 0?
+			} // else do nothing because we are just skipping over the contents of something in brackets
 		}
 		
 		
