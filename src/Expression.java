@@ -3,16 +3,21 @@ import java.util.Stack;
 import java.util.Hashtable;
 import java.util.Map;
 
-public class Expression implements Serializable {
+public class Expression implements Term, Serializable, Printable {
 	private static final long serialVersionUID = 1L;
 	public Stack<Term> terms  = new Stack<Term>();
 	private boolean isSimplified = false;
+	private Printable root;
 	
 	public static Expression createExpressionFromString(String input) {
-		return new Expression(input, new Hashtable<String,Variable>());
+		return new Expression(input, new Hashtable<String,Variable>(), null);
 	}
 
-	public Expression(String input, Map<String, Variable> varNameMap) {
+	public Expression(String input, Map<String, Variable> varNameMap, Printable root) {
+		if(root == null) {
+			root = this;
+		}
+		this.root = root;
 		
 		int bufferLength = 0;
 		
@@ -46,10 +51,10 @@ public class Expression implements Serializable {
 					String segment = input.substring(bracketPos+1, i);
 					Term term;
 					if(segment.charAt(0) == '\\') {
-						Lambda lambda = new Lambda(segment, varNameMap);  // rename to parseLambda?
+						Lambda lambda = new Lambda(segment, varNameMap, root);  // rename to parseLambda?
 						term = (Term) lambda;
 					} else {
-						Expression expr = new Expression(segment, varNameMap);
+						Expression expr = new Expression(segment, varNameMap, root);
 						term = (Term) expr;
 					}
 					terms.push(term);  // I think this is using the stack as if the input string is in reverse polish
@@ -65,9 +70,7 @@ public class Expression implements Serializable {
 		}
 	}
 
-	void simplify() {
-		System.out.println("here is the current state of the current expression: ");
-		System.out.println(stringify());
+	public void simplify() {
 		// should eating set isSimplified to false?
 		if(isSimplified) {
 			//return;  // don't optimize when debugging
@@ -93,8 +96,8 @@ public class Expression implements Serializable {
 			terms.addAll(lambda.body.terms);  // check that this doesn't reverse order.....
 		}
 		isSimplified = true;
-		System.out.println("and here it is now: ");
-		System.out.println(stringify());
+		System.out.println("Simplified to: ");
+		root.print();
 	}
 	
 	private static Term unwrapInstance(Term term) {
@@ -124,5 +127,9 @@ public class Expression implements Serializable {
 			result = result.concat(terms.get(i).stringify() + " ");
 		}
 		return result;
+	}
+	
+	public void print() {
+		System.out.println(stringify());
 	}
 }

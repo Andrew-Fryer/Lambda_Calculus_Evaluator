@@ -76,7 +76,7 @@ public class LambdaEvaluator {
 		
 		*/
 		
-		Expression exprFromString = Expression.createExpressionFromString("(\\ x -> x x) (\\ y -> y y)");
+		Expression exprFromString = Expression.createExpressionFromString("(\\g -> (\\y -> g g y)) (\\h -> (\\z -> h h h z)) (\\m -> (\\n -> (\\f -> m n f)))");
 		
 		exprFromString.simplify();
 		

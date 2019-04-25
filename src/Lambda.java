@@ -9,8 +9,11 @@ public class Lambda implements Term, Serializable {
 	private static final long serialVersionUID = 1L;  // eclipse did this
 	public Variable var;
 	public Expression body;
+	private Printable root;
 	
-	public Lambda(String input, Map<String, Variable> varNameMap) {
+	public Lambda(String input, Map<String, Variable> varNameMap, Printable root) {
+		this.root = root;
+		
 		int i = 0;
 		i++; // move to after the '\\' character
 		// ignore whitespace
@@ -34,7 +37,7 @@ public class Lambda implements Term, Serializable {
 		while(input.charAt(i) == ' ') {
 			i++;
 		}
-		body = new Expression(input.substring(i, input.length()), varNameMap);
+		body = new Expression(input.substring(i, input.length()), varNameMap, root);
 	}
 	
 	public void substitute(Term input) {
