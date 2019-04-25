@@ -37,9 +37,9 @@ public class Lambda implements Term, Serializable {
 		while(input.charAt(i) == ' ') {
 			i++;
 		}
-		result.body = Expression.parseExpression(input.substring(i, input.length()-1), varNameMap);
+		result.body = Expression.parseExpression(input.substring(i, input.length()), varNameMap);
 		
-		return new Lambda();
+		return result;
 	}
 	
 	public void substitute(Term input) {

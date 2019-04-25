@@ -31,13 +31,16 @@ public class Expression implements Serializable {
 			} else if(bracketDepth == 0) {
 				if(current == ' ') {
 					// flush the buffer
-					String varName = input.substring(i - bufferLength, i);
-					Instance inst = Instance.parseInstance(varName, varNameMap);
-					result.terms.push(inst);
+					if(bufferLength > 0) {
+						String varName = input.substring(i - bufferLength, i);
+						Instance inst = Instance.parseInstance(varName, varNameMap);
+						result.terms.push(inst);
+						bufferLength = 0;
+					}
 				} else {
 					bufferLength++;
 				}
-			} else if(current == ')') {
+			} else if(current == ')') {  // I should really delete variables from the map when they go out of scope...
 				if(bracketDepth <= 0) {
 					throw new Error("closing bracket does not have any corresponding opening bracket");
 				} else if(bracketDepth == 1) {
@@ -55,7 +58,12 @@ public class Expression implements Serializable {
 				bracketDepth--;  // set bufferLength = 0?
 			} // else do nothing because we are just skipping over the contents of something in brackets
 		}
-		
+		// flush the buffer
+		if(bufferLength > 0) {
+			String varName = input.substring(input.length() - bufferLength);
+			Instance inst = Instance.parseInstance(varName, varNameMap);
+			result.terms.push(inst);
+		}
 		
 		return result;
 	}
