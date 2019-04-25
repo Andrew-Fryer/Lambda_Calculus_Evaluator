@@ -75,25 +75,37 @@ public class Expression implements Term, Serializable, Printable {
 		if(isSimplified) {
 			//return;  // don't optimize when debugging
 		}
+		System.out.println("Simplifying: " + this.stringify());
+		System.out.println("root looks like: ");
+		root.print();
 		while(terms.size() > 0) {
 			Term term = unwrapInstance(terms.pop());
 			
 			if(term instanceof Instance) {
+				// the instance has not been assigned a value
 				terms.push(term);
-				return;
+				System.out.println("The following varibale has not been assigned a value: " + ((Instance)term).binding.name);
+				return;  // without a value, the expression cannot be simplified any more
 			}
 			
-			Lambda lambda = (Lambda) term;
+			Lambda lambda = (Lambda) term;  // what if the term is an expression?
 			
 			lambda.simplify();
 			
 			if(terms.size() > 0) {
 				lambda.substitute(terms.pop());
+				
+				// there shouldn't be any instances of the outermost variable in the body anymore
+				
+				terms.addAll(lambda.body.terms);  // check that this doesn't reverse order.....
+			} else {
+				terms.add(lambda);  // just put it back because there is nothing to substitute in
+				isSimplified = true;
+				System.out.println("Simplified to: " + this.stringify());
+				System.out.println("root looks like: ");
+				root.print();
+				return;
 			}
-			
-			// there shouldn't be any instances of the outermost variable in the body anymore
-			
-			terms.addAll(lambda.body.terms);  // check that this doesn't reverse order.....
 		}
 		isSimplified = true;
 		System.out.println("Simplified to: ");
@@ -108,7 +120,7 @@ public class Expression implements Term, Serializable, Printable {
 			prevInstance = (Instance) current;
 			current = prevInstance.binding.value;
 			if(current == null) {
-				// the variable is not defined yet
+				// the instance has not been assigned a value
 				return prevInstance;
 			} else if(current instanceof Lambda) {
 				// we had to un-wrap an instance

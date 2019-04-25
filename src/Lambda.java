@@ -40,7 +40,7 @@ public class Lambda implements Term, Serializable {
 		body = new Expression(input.substring(i, input.length()), varNameMap, root);
 	}
 	
-	public void substitute(Term input) {
+	public void substitute(Term input) {  // if everything is lazy, input will always be a lambda because an instance or expression would be undefined
 		if(var.numRefs > 0) {
 			input.simplify();
 		} else {
