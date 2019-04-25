@@ -18,7 +18,13 @@ public class Instance implements Term, Serializable {
 	}
 	
 	public String stringify() {
-		return binding.name;
+		String toDisplay;
+		if(binding.value == null) {
+			toDisplay = binding.name;
+		} else {
+			toDisplay = binding.value.stringify();
+		}
+		return toDisplay;
 	}
 
 }
