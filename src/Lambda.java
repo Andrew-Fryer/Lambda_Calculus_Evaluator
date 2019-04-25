@@ -3,13 +3,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Map;
 
 public class Lambda implements Term, Serializable {
 	private static final long serialVersionUID = 1L;  // eclipse did this
 	public Variable var = new Variable();
 	public Expression body = new Expression();
 	
-	public static Lambda parseInput(String input) {
+	public static Lambda parseLambda(String input, Map<String, Variable> varNameMap) {
 		return new Lambda();
 	}
 	

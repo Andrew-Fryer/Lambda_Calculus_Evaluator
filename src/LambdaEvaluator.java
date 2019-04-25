@@ -2,8 +2,8 @@
 public class LambdaEvaluator {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		
+		/*
 		// this is my test data:
 		
 		Lambda lambda1 = new Lambda();
@@ -73,6 +73,13 @@ public class LambdaEvaluator {
 		System.out.println(output);
 		
 		System.out.println("hello world");
-
+		
+		*/
+		
+		Expression exprFromString = Expression.createExpressionFromString("(\\ x -> x x) (\\ y -> y y)");
+		
+		exprFromString.simplify();
+		
+		System.out.println(exprFromString.stringify());
 	}
 }
