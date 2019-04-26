@@ -61,7 +61,7 @@ public class Lambda implements Term, Serializable {
 	public String stringify() {
 		// TODO Auto-generated method stub
 		
-		return "(\\" + var.name + (var.value != null ? "[:= " + var.value.stringify() + "]" : "") + " -> " + body.stringify() + ")";
+		return "(\\" + var.name + " -> " + body.stringify() + ")";
 	}
 	
 	public Object clone() {  // deep
