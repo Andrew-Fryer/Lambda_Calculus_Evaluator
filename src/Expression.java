@@ -1,3 +1,7 @@
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Stack;
 import java.util.Hashtable;
@@ -11,6 +15,10 @@ public class Expression implements Term, Serializable, Printable {
 	
 	public static Expression createExpressionFromString(String input) {
 		return new Expression(input, new Hashtable<String,Variable>(), null);
+	}
+	
+	public Expression() {
+		// used by the clone
 	}
 
 	public Expression(String input, Map<String, Variable> varNameMap, Printable root) {
@@ -114,23 +122,21 @@ public class Expression implements Term, Serializable, Printable {
 	
 	private static Term unwrapInstance(Term term) {
 		Term current = term;
-		Instance prevInstance;
+		Instance prevInstance = null;
 		// extract lambda from any Instance shells
-		while(current instanceof Instance) {
-			prevInstance = (Instance) current;
-			current = prevInstance.binding.value;
+		while(true) {
 			if(current == null) {
-				// the instance has not been assigned a value
 				return prevInstance;
+			} else if(current instanceof Instance) {
+				prevInstance = (Instance) current;
+				current = prevInstance.binding.value;
 			} else if(current instanceof Lambda) {
-				// we had to un-wrap an instance
-				// now we need to clone it so that each instance has its own copy of the value of the variable
-				Lambda lambda = null;
-				lambda = (Lambda) ((Lambda) current).clone();
-				return lambda;
+				return (Lambda) ((Lambda) current).clone();
+			} else if(current instanceof Expression) {
+				current.simplify();
+				return (Expression) ((Expression) current).clone();
 			}
 		}
-		return term;  // why was I casting to Lambda?
 	}
 	
 	public String stringify() {
@@ -143,5 +149,18 @@ public class Expression implements Term, Serializable, Printable {
 	
 	public void print() {
 		System.out.println(stringify());
+	}
+	
+	public Object clone() {
+		try {
+			ByteArrayOutputStream outputByteStream = new ByteArrayOutputStream();
+			ObjectOutputStream outputObjectStream = new ObjectOutputStream(outputByteStream);
+			outputObjectStream.writeObject(this);
+			ByteArrayInputStream inputByteStream = new ByteArrayInputStream(outputByteStream.toByteArray());
+			ObjectInputStream inputObjectStream = new ObjectInputStream(inputByteStream);
+			return inputObjectStream.readObject();
+		} catch (Exception e) {
+			throw new Error("Failed to clone lambda");
+		}
 	}
 }

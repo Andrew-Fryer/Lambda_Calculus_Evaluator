@@ -76,7 +76,8 @@ public class LambdaEvaluator {
 		
 		*/
 		
-		Expression exprFromString = Expression.createExpressionFromString("(\\m -> (\\n -> (\\f -> m (n f)))) (\\h -> (\\z -> h h z)) (\\g -> (\\y -> g g g y))");
+		// remember that the order of expression looks backwards in the debugger because index 0 is the bottom of the stack (the right-most term)
+		Expression exprFromString = Expression.createExpressionFromString("(\\m -> (\\n -> (\\f -> m (n f)))) (\\h -> (\\z -> h (h z))) (\\g -> (\\y -> g (g (g y))))");
 		
 		exprFromString.simplify();
 		
