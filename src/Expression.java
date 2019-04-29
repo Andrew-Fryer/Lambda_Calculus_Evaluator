@@ -111,7 +111,7 @@ public class Expression implements Term, Serializable, Printable {
 					term = (Lambda) ((Lambda) current).clone();
 					Lambda lambda = (Lambda) term;
 					
-					lambda.simplify();
+					lambda.simplify();  // simplify before cloning?
 					
 					if(terms.size() > 1) {
 						lambda.substitute(terms.get(terms.size()-2));
@@ -129,7 +129,13 @@ public class Expression implements Term, Serializable, Printable {
 					// unwrapped to an Expression
 					current.simplify();
 					term = (Expression) ((Expression) current).clone();
-					unwrappedAndSimplified = true;
+					Expression expr = (Expression) term;
+					if(expr.terms.size() == 1) {
+						// unwrap Expression
+						current = expr.terms.firstElement();
+					} else {
+						return;
+					}
 				}
 			}
 			
@@ -140,11 +146,11 @@ public class Expression implements Term, Serializable, Printable {
 	}
 	
 	public String stringify() {
-		String result = "";
+		String result = "(";
 		for(int i = terms.size()-1; i >= 0; i--) {
 			result = result.concat(terms.get(i).stringify() + " ");
 		}
-		return result;
+		return result + ")";
 	}
 	
 	public void print() {
