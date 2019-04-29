@@ -89,55 +89,53 @@ public class Expression implements Term, Serializable, Printable {
 			System.out.println("root looks like: ");
 			root.print();
 			
-			Term term = unwrapInstance(terms.peek());
+			Term term = terms.peek();
 			
-			if(term instanceof Instance) {
-				// the instance has not been assigned a value
-				System.out.println("The following variable has not been assigned a value: " + ((Instance)term).binding.name);
-				return;  // without a value, the expression cannot be simplified any more
-			}
-			
-			Lambda lambda = (Lambda) term;  // what if the term is an expression?
-			
-			lambda.simplify();
-			
-			if(terms.size() > 1) {
-				lambda.substitute(terms.get(terms.size()-2));
-				
-				// there shouldn't be any instances of the outermost variable in the body anymore
-				terms.pop();  // discard lambda
-				terms.pop();  // discard whatever was substituted
-				terms.addAll(lambda.body.terms);
-			} else {
-				isSimplified = true;
-				return;
+			Term current = term;
+			Instance prevInstance = null;
+			// extract lambda from any Instance shells
+			boolean unwrappedAndSimplified = false;
+			while(!unwrappedAndSimplified) {
+				if(current == null) {
+					// instance cannot be unwrapped any farther
+					term = prevInstance;
+					// the instance has not been assigned a value
+					System.out.println("The following variable has not been assigned a value: " + ((Instance)term).binding.name);
+					return;  // without a value, the expression cannot be simplified any more
+				} else if(current instanceof Instance) {
+					// unwrap instance
+					prevInstance = (Instance) current;
+					current = prevInstance.binding.value;
+				} else if(current instanceof Lambda) {
+					// unwrapped to a Lambda
+					term = (Lambda) ((Lambda) current).clone();
+					Lambda lambda = (Lambda) term;
+					
+					lambda.simplify();
+					
+					if(terms.size() > 1) {
+						lambda.substitute(terms.get(terms.size()-2));
+						
+						// there shouldn't be any instances of the outermost variable in the body anymore
+						terms.pop();  // discard lambda
+						terms.pop();  // discard whatever was substituted
+						terms.addAll(lambda.body.terms);
+						unwrappedAndSimplified = true;
+					} else {
+						isSimplified = true;
+						return;
+					}
+				} else if(current instanceof Expression) {
+					// unwrapped to an Expression
+					current.simplify();
+					term = (Expression) ((Expression) current).clone();
+					unwrappedAndSimplified = true;
+				}
 			}
 			
 			System.out.println("Simplified to: " + this.stringify());
 			System.out.println("root looks like: ");
 			root.print();
-		}
-		isSimplified = true;
-		System.out.println("Simplified to: ");
-		root.print();
-	}
-	
-	private static Term unwrapInstance(Term term) {
-		Term current = term;
-		Instance prevInstance = null;
-		// extract lambda from any Instance shells
-		while(true) {
-			if(current == null) {
-				return prevInstance;
-			} else if(current instanceof Instance) {
-				prevInstance = (Instance) current;
-				current = prevInstance.binding.value;
-			} else if(current instanceof Lambda) {
-				return (Lambda) ((Lambda) current).clone();
-			} else if(current instanceof Expression) {
-				current.simplify();
-				return (Expression) ((Expression) current).clone();
-			}
 		}
 	}
 	
