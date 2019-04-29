@@ -83,15 +83,17 @@ public class Expression implements Term, Serializable, Printable {
 		if(isSimplified) {
 			//return;  // don't optimize when debugging
 		}
-		System.out.println("Simplifying: " + this.stringify());
-		System.out.println("root looks like: ");
-		root.print();
+		
 		while(terms.size() > 0) {
+			System.out.println("Simplifying: " + this.stringify());
+			System.out.println("root looks like: ");
+			root.print();
+			
 			Term term = unwrapInstance(terms.peek());
 			
 			if(term instanceof Instance) {
 				// the instance has not been assigned a value
-				System.out.println("The following varibale has not been assigned a value: " + ((Instance)term).binding.name);
+				System.out.println("The following variable has not been assigned a value: " + ((Instance)term).binding.name);
 				return;  // without a value, the expression cannot be simplified any more
 			}
 			
@@ -105,14 +107,15 @@ public class Expression implements Term, Serializable, Printable {
 				// there shouldn't be any instances of the outermost variable in the body anymore
 				terms.pop();  // discard lambda
 				terms.pop();  // discard whatever was substituted
-				terms.addAll(lambda.body.terms);  // check that this doesn't reverse order.....
+				terms.addAll(lambda.body.terms);
 			} else {
 				isSimplified = true;
-				System.out.println("Simplified to: " + this.stringify());
-				System.out.println("root looks like: ");
-				root.print();
 				return;
 			}
+			
+			System.out.println("Simplified to: " + this.stringify());
+			System.out.println("root looks like: ");
+			root.print();
 		}
 		isSimplified = true;
 		System.out.println("Simplified to: ");
