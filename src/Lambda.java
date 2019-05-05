@@ -75,18 +75,6 @@ public class Lambda implements Term, Serializable {
 		} catch (Exception e) {
 			throw new Error("Failed to clone lambda");
 		}
-		/*Lambda clone = new Lambda();
-		
-		clone.var.name = this.var.name;
-		clone.var.numRefs = this.var.numRefs;
-		if(this.var.value == null) {
-			clone.var.value = null;
-		} else if(this.var.value instanceof Instance) {
-			clone.var.value = new Instance();
-			clone.var.value.binding = 
-		}
-		
-		return ;*/
 	}
 
 }
