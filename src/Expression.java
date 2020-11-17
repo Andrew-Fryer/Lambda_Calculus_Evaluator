@@ -84,7 +84,7 @@ public class Expression implements Term, Serializable, Printable {
 			//return;  // don't optimize when debugging
 		}
 		
-		while(terms.size() > 0) {
+		while(terms.size() > 0) {  // this is just a while(true)
 			System.out.println("Simplifying: " + this.stringify());
 			System.out.println("root looks like: ");
 			root.print();
@@ -112,6 +112,7 @@ public class Expression implements Term, Serializable, Printable {
 					Lambda lambda = (Lambda) term;
 					
 					lambda.simplify();  // simplify before cloning?
+					// this could be the entire problem!!!!! (maybe we aren't simplifying the original copy -> if the original is used somewhere)
 					
 					if(terms.size() > 1) {
 						lambda.substitute(terms.get(terms.size()-2));
@@ -119,7 +120,7 @@ public class Expression implements Term, Serializable, Printable {
 						// there shouldn't be any instances of the outermost variable in the body anymore
 						terms.pop();  // discard lambda
 						terms.pop();  // discard whatever was substituted
-						terms.addAll(lambda.body.terms);
+						terms.push(lambda.body);
 						unwrappedAndSimplified = true;
 					} else {
 						isSimplified = true;
@@ -132,9 +133,9 @@ public class Expression implements Term, Serializable, Printable {
 					Expression expr = (Expression) term;
 					if(expr.terms.size() == 1) {
 						// unwrap Expression
-						current = expr.terms.firstElement();
+						current = expr.terms.firstElement();  // sketchy!
 					} else {
-						return;
+						return;  // the problem is likely here!
 					}
 				}
 			}
